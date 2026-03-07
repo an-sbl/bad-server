@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { format } from 'date-fns'
 import { useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import DOMPurify from 'dompurify';
 import { selectOrderByNumber } from '../../services/selector'
 import { ordersActions } from '../../services/slice/orders'
 import { getOrderByNumber } from '../../services/slice/orders/thunk'
@@ -103,7 +104,10 @@ export default function AdminOrderDetail() {
                     <>
                         <div
                             dangerouslySetInnerHTML={{
-                                __html: dataInfo.comment,
+                                __html: DOMPurify.sanitize(dataInfo.comment, {
+                                    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
+                                    ALLOWED_ATTR: []
+                                }),
                             }}
                         />
                     </>
