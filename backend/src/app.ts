@@ -23,6 +23,15 @@ app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));
 
 app.use(serveStatic(path.join(__dirname, 'public')))
 
+app.use(urlencoded({ 
+    extended: true, 
+    limit: '5mb'
+}))
+
+app.use(json({ 
+    limit: '5mb'
+}))
+
 app.get('/auth/csrf-token', csrfProtection, sendCsrfToken)
 
 app.use((req, res, next) => {

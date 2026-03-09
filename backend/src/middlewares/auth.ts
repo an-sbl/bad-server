@@ -23,9 +23,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
         const user = await UserModel.findOne(
             {
                 _id: new Types.ObjectId(payload.sub),
-            },
-            { password: 0, salt: 0 }
-        )
+            }).select('-password')
 
         if (!user) {
             return next(new ForbiddenError('Нет доступа'))
