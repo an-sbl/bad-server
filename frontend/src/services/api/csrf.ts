@@ -18,7 +18,7 @@ export const csrfManager = new CsrfManager();
 
 export const initCsrf = async () => {
   try {
-    const response = await fetch('/api/csrf-token', {
+    const response = await fetch('/auth/csrf-token', {
       credentials: 'include'
     });
     const data = await response.json();
