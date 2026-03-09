@@ -10,13 +10,15 @@ import errorHandler from './middlewares/error-handler'
 import serveStatic from './middlewares/serverStatic'
 import routes from './routes'
 
+import { csrfProtection, sendCsrfToken, csrfErrorHandler } from './middlewares/csrf'
+
 const { PORT = 3000 } = process.env
+const { ORIGIN_ALLOW } = process.env
 const app = express()
 
 app.use(cookieParser())
 
-app.use(cors())
-// app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));
+app.use(cors({ origin: ORIGIN_ALLOW, credentials: true }));
 // app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(serveStatic(path.join(__dirname, 'public')))
@@ -24,9 +26,20 @@ app.use(serveStatic(path.join(__dirname, 'public')))
 app.use(urlencoded({ extended: true }))
 app.use(json())
 
+app.get('/csrf-token', csrfProtection, sendCsrfToken)
+
+app.use((req, res, next) => {
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+        csrfProtection(req, res, next);
+    } else {
+        next();
+    }
+});
+
 app.options('*', cors())
 app.use(routes)
 app.use(errors())
+app.use(csrfErrorHandler)
 app.use(errorHandler)
 
 // eslint-disable-next-line no-console
