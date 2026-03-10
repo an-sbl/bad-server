@@ -31,6 +31,7 @@ export const getOrders = async (
         } = req.query
 
         const normalizedLimit = Math.min(Number(limit), 10);
+        const normalizedPage = Math.max(Number(page), 1);
         const filters: FilterQuery<Partial<IOrder>> = {}
 
         if (status) {
@@ -120,7 +121,7 @@ export const getOrders = async (
 
         aggregatePipeline.push(
             { $sort: sort },
-            { $skip: (Number(page) - 1) * normalizedLimit },
+            { $skip: (normalizedPage - 1) * normalizedLimit },
             { $limit: normalizedLimit },
             {
                 $group: {
@@ -144,7 +145,7 @@ export const getOrders = async (
             pagination: {
                 totalOrders,
                 totalPages,
-                currentPage: Number(page),
+                currentPage: normalizedPage,
                 pageSize: normalizedLimit,
             },
         })
@@ -163,9 +164,10 @@ export const getOrdersCurrentUser = async (
         const { search, page = 1, limit = 5 } = req.query
         
         const normalizedLimit = Math.min(Number(limit), 5); 
+        const normalizedPage = Math.max(Number(page), 1);
 
         const options = {
-            skip: (Number(page) - 1) * normalizedLimit,
+            skip: (normalizedPage - 1) * normalizedLimit,
             limit: normalizedLimit,
         }
 
@@ -221,7 +223,7 @@ export const getOrdersCurrentUser = async (
             pagination: {
                 totalOrders,
                 totalPages,
-                currentPage: Number(page),
+                currentPage: normalizedPage,
                 pageSize: normalizedLimit,
             },
         })
