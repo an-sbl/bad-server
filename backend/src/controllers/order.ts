@@ -30,6 +30,9 @@ export const getOrders = async (
             search,
         } = req.query
 
+        if (isNaN(Number(page)) || isNaN(Number(limit))) {
+            throw new BadRequestError('Некорректные параметры пагинации');
+        }
         const normalizedLimit = Math.min(Number(limit), 10);
         const normalizedPage = Math.max(Number(page), 1);
         const filters: FilterQuery<Partial<IOrder>> = {}
@@ -163,6 +166,9 @@ export const getOrdersCurrentUser = async (
         const userId = res.locals.user._id
         const { search, page = 1, limit = 5 } = req.query
         
+        if (isNaN(Number(page)) || isNaN(Number(limit))) {
+            throw new BadRequestError('Некорректные параметры пагинации');
+        }
         const normalizedLimit = Math.min(Number(limit), 5); 
         const normalizedPage = Math.max(Number(page), 1);
 

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { FilterQuery } from 'mongoose'
 import NotFoundError from '../errors/not-found-error'
+import BadRequestError from '../errors/bad-request-error'
 import Order from '../models/order'
 import User, { IUser } from '../models/user'
 import escapeRegex from '../utils/escapeRegExp'
@@ -30,8 +31,12 @@ export const getCustomers = async (
             search,
         } = req.query
 
+        if (isNaN(Number(page)) || isNaN(Number(limit))) {
+            throw new BadRequestError('Некорректные параметры пагинации');
+        }
+
         const normalizedLimit = Math.min(Number(limit), 10); 
-        const normalizedPage = Math.max(Number(limit), 1); 
+        const normalizedPage = Math.max(Number(page), 1); 
         const filters: FilterQuery<Partial<IUser>> = {}
 
         if (registrationDateFrom) {

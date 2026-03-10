@@ -32,14 +32,15 @@ export const validateOrderBody = celebrate({
                     'Указано не валидное значение для способа оплаты, возможные значения - "card", "online"',
                 'string.empty': 'Не указан способ оплаты',
             }),
-        email: Joi.string().email().required().messages({
+        email: Joi.string().max(30).email().required().messages({
             'string.empty': 'Не указан email',
+            'string.max': 'Почта слишком длиная (максимум 30 символов)',
         }),
-        phone: Joi.string().required().pattern(phoneRegExp).min(6).max(15).messages({
+        phone: Joi.string().required().min(6).max(15).pattern(phoneRegExp).messages({
             'string.empty': 'Не указан телефон',
-            'string.pattern.base': 'Неверный формат телефона',
             'string.min': 'Телефон слишком короткий (минимум 6 символов)',
             'string.max': 'Телефон слишком длинный (максимум 15 символов)',
+            'string.pattern.base': 'Неверный формат телефона',
         }),
         address: Joi.string().required().messages({
             'string.empty': 'Не указан адрес',
