@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 import { constants } from 'http2'
 import BadRequestError from '../errors/bad-request-error'
+import { fileTypeFromBuffer } from 'file-type'
+import fs from 'fs/promises'
 
 export const uploadFile = async (
     req: Request,
@@ -11,9 +13,21 @@ export const uploadFile = async (
         return next(new BadRequestError('Файл не загружен'))
     }
     try {
-         if (req.file.size > 5 * 1024 * 1024) {
-            return next(new BadRequestError('Файл больше 5MB'))
+         if (req.file.size < 2 * 1024) {
+            return next(new BadRequestError('Файл меньше 2KB)'))
         }
+         if (req.file.size > 10 * 1024 * 1024) {
+            return next(new BadRequestError('Файл больше 10MB'))
+        }
+
+        const fileBuffer = await fs.readFile(req.file.path)
+        const type = await fileTypeFromBuffer(new Uint8Array(fileBuffer))
+        
+        if (!type || !type.mime.startsWith('image/')) {
+            await fs.unlink(req.file.path).catch(() => {});
+            return next(new BadRequestError('Файл не является изображением'));
+        }
+               
         const fileName = process.env.UPLOAD_PATH
             ? `/${process.env.UPLOAD_PATH}/${req.file.filename}`
             : `/${req.file?.filename}`
@@ -22,6 +36,9 @@ export const uploadFile = async (
             originalName: req.file?.originalname,
         })
     } catch (error) {
+         if (req.file?.path) {
+            await fs.unlink(req.file.path).catch(() => {});
+        }
         return next(error)
     }
 }
