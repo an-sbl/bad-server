@@ -27,8 +27,8 @@ app.use(cors({
 }));
 // app.use(express.static(path.join(__dirname, 'public')));
 const limiter = rateLimit({
-  windowMs: 10 * 1000, 
-  max: 5,
+  windowMs: 30 * 1000, 
+  max: 50,
   message: { error: 'Слишком много запросов. Сервер устает обрабатывать так быстро' },
   standardHeaders: true,
   legacyHeaders: false,
