@@ -5,6 +5,7 @@ import 'dotenv/config'
 import express, { json, urlencoded } from 'express'
 import mongoose from 'mongoose'
 import path from 'path'
+import rateLimit from 'express-rate-limit'
 import { DB_ADDRESS } from './config'
 import errorHandler from './middlewares/error-handler'
 import serveStatic from './middlewares/serverStatic'
@@ -25,6 +26,16 @@ app.use(cors({
     credentials: true,
 }));
 // app.use(express.static(path.join(__dirname, 'public')));
+const limiter = rateLimit({
+  windowMs: 60 * 1000, 
+  max: 10,
+  message: { error: 'Слишком много запросов. Сервер устает обрабатывать так быстро' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Применяем ко всем маршрутам
+app.use(limiter);
 
 app.use(serveStatic(path.join(__dirname, 'public')))
 
