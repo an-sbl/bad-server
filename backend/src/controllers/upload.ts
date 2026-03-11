@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 import { constants } from 'http2'
-import BadRequestError from '../errors/bad-request-error'
 import { fileTypeFromBuffer } from 'file-type'
 import fs from 'fs/promises'
+import BadRequestError from '../errors/bad-request-error'
 
 export const uploadFile = async (
     req: Request,

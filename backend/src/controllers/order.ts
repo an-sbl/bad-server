@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from 'express'
 import { FilterQuery, Error as MongooseError, Types } from 'mongoose'
+import sanitizeHtml from 'sanitize-html'
 import BadRequestError from '../errors/bad-request-error'
 import NotFoundError from '../errors/not-found-error'
 import Order, { IOrder } from '../models/order'
 import Product, { IProduct } from '../models/product'
 import User from '../models/user'
 import escapeRegex from '../utils/escapeRegExp'
-import sanitizeHtml from 'sanitize-html'
 
 // eslint-disable-next-line max-len
 // GET /orders?page=2&limit=5&sort=totalAmount&order=desc&orderDateFrom=2024-07-01&orderDateTo=2024-08-01&status=delivering&totalAmountFrom=100&totalAmountTo=1000&search=%2B1
@@ -30,7 +30,7 @@ export const getOrders = async (
             search,
         } = req.query
 
-        if (isNaN(Number(page)) || isNaN(Number(limit))) {
+        if (Number.isNaN(Number(page)) || Number.isNaN(Number(limit))) {
             throw new BadRequestError('Некорректные параметры пагинации');
         }
         const normalizedLimit = Math.min(Number(limit), 10);
@@ -166,7 +166,7 @@ export const getOrdersCurrentUser = async (
         const userId = res.locals.user._id
         const { search, page = 1, limit = 5 } = req.query
         
-        if (isNaN(Number(page)) || isNaN(Number(limit))) {
+        if (Number.isNaN(Number(page)) || Number.isNaN(Number(limit))) {
             throw new BadRequestError('Некорректные параметры пагинации');
         }
         const normalizedLimit = Math.min(Number(limit), 5); 

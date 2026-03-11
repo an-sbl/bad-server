@@ -9,11 +9,11 @@ export const csrfProtection = csrf({
   }
 });
 
-export const sendCsrfToken = (req: Request, res: Response, next: NextFunction) => {
+export const sendCsrfToken = (req: Request, res: Response, _next: NextFunction) => {
   res.json({ csrfToken: req.csrfToken() });
 };
 
-export const csrfErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const csrfErrorHandler = (err: any, _req: Request, res: Response, next: NextFunction) => {
   if (err.code !== 'EBADCSRFTOKEN') {
     return next(err);
   }

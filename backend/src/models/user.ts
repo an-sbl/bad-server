@@ -71,7 +71,7 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
         salt: {
             type: String,
             required: true,
-            default: function() {
+            default() {
                 return Math.random().toString(36).substring(2, 15)
             },
             select: false,

@@ -31,7 +31,7 @@ export const getCustomers = async (
             search,
         } = req.query
 
-        if (isNaN(Number(page)) || isNaN(Number(limit))) {
+        if (Number.isNaN(Number(page)) || Number.isNaN(Number(limit))) {
             throw new BadRequestError('Некорректные параметры пагинации');
         }
 

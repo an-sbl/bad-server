@@ -20,7 +20,7 @@ const app = express()
 app.use(cookieParser())
 
 app.use(cors({ 
-    origin: 'http://localhost:5173',
+    origin: ORIGIN_ALLOW,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
