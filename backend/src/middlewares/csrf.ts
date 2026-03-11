@@ -1,20 +1,34 @@
-import csrf from 'csurf';
+import { doubleCsrf } from "csrf-csrf";
 import { Request, Response, NextFunction } from 'express';
 
-export const csrfProtection = csrf({
-  cookie: {
+const { 
+  doubleCsrfProtection, 
+  generateCsrfToken,
+  invalidCsrfTokenError 
+} = doubleCsrf({
+  getSecret: () => 'secret-key-for-csrf',
+  getSessionIdentifier: (req) => req.cookies?.['_csrf'] || '',
+  cookieName: "_csrf-token",
+  cookieOptions: {
     httpOnly: true,
+    sameSite: 'strict',
+    path: '/',
     secure: false,
-    sameSite: 'strict'
-  }
+  },
+  getCsrfTokenFromRequest: (req) => {
+    return (req.headers['x-csrf-token'] || req.headers['csrf-token']) as string;
+  },
+  ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
 });
 
+export { doubleCsrfProtection as csrfProtection };
+
 export const sendCsrfToken = (req: Request, res: Response, next: NextFunction) => {
-  res.json({ csrfToken: req.csrfToken() });
+  res.json({ csrfToken: generateCsrfToken(req, res) });
 };
 
 export const csrfErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  if (err.code !== 'EBADCSRFTOKEN') {
+  if (err !== invalidCsrfTokenError) {
     return next(err);
   }
   
