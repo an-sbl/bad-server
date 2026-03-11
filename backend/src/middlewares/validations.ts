@@ -36,7 +36,7 @@ export const validateOrderBody = celebrate({
             'string.empty': 'Не указан email',
             'string.max': 'Почта слишком длиная (максимум 30 символов)',
         }),
-        phone: Joi.string().required().min(6).max(15).pattern(phoneRegExp).messages({
+        phone: Joi.string().required().min(6).max(20).pattern(phoneRegExp).messages({
             'string.empty': 'Не указан телефон',
             'string.min': 'Телефон слишком короткий (минимум 6 символов)',
             'string.max': 'Телефон слишком длинный (максимум 15 символов)',
