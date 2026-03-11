@@ -141,7 +141,7 @@ export const validateAuthentication = celebrate({
 export const validateCustomersQuery = celebrate({
     query: Joi.object({
         page: Joi.number().integer().min(1).optional(),
-        limit: Joi.number().integer().min(1).max(100).optional(),
+        limit: Joi.number().integer().min(1).optional(),
         sortField: Joi.string().valid('createdAt', 'totalAmount', 'orderCount', 'lastOrderDate').optional(),
         sortOrder: Joi.string().valid('asc', 'desc').optional(),
         search: Joi.string().max(100).optional(),
@@ -159,7 +159,7 @@ export const validateCustomersQuery = celebrate({
 export const validateOrdersQuery = celebrate({
     query: Joi.object({
         page: Joi.number().integer().min(1).optional(),
-        limit: Joi.number().integer().min(1).max(100).optional(),
+        limit: Joi.number().integer().min(1).optional(),
         sortField: Joi.string().valid('createdAt', 'totalAmount', 'orderNumber', 'status').optional(),
         sortOrder: Joi.string().valid('asc', 'desc').optional(),
         search: Joi.string().max(100).optional(),
@@ -174,7 +174,7 @@ export const validateOrdersQuery = celebrate({
 export const validateUserOrdersQuery = celebrate({
     query: Joi.object({
         page: Joi.number().integer().min(1).optional(),
-        limit: Joi.number().integer().min(1).max(100).optional(),
+        limit: Joi.number().integer().min(1).optional(),
         search: Joi.string().max(100).optional(),
     }).unknown(false)
 });
