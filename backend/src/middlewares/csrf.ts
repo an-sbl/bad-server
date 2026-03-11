@@ -8,7 +8,7 @@ const {
 } = doubleCsrf({
   getSecret: () => 'secret-key-for-csrf',
   getSessionIdentifier: (req) => req.cookies?.['_csrf'] || '',
-  cookieName: "_csrf-token",
+  cookieName: "_csrf",
   cookieOptions: {
     httpOnly: true,
     sameSite: 'strict',
