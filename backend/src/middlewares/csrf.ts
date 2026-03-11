@@ -1,41 +1,22 @@
-import { doubleCsrf } from "csrf-csrf";
+import csrf from 'csurf';
 import { Request, Response, NextFunction } from 'express';
 
-const { 
-  doubleCsrfProtection, 
-  generateCsrfToken,
-  invalidCsrfTokenError 
-} = doubleCsrf({
-  getSecret: (req) => req?.cookies?.['_csrf'] || process.env.CSRF_SECRET || 'secret-key-for-csrf',
-  getSessionIdentifier: (req) => 'session',
-  cookieName: undefined,
-  cookieOptions: undefined,
-  getCsrfTokenFromRequest: (req) => {
-    return (req.headers['x-csrf-token'] || req.headers['csrf-token']) as string;
-  },
-  ignoredMethods: ['GET', 'HEAD', 'OPTIONS'],
+export const csrfProtection = csrf({
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'strict'
+  }
 });
 
-export { doubleCsrfProtection as csrfProtection };
-
 export const sendCsrfToken = (req: Request, res: Response, next: NextFunction) => {
-  
-  const token = generateCsrfToken(req, res);
-  const secret = process.env.CSRF_SECRET || 'secret-key-for-csrf'
-  res.cookie('_csrf', secret, {
-    httpOnly: true,
-    sameSite: 'strict',
-    path: '/',
-    secure: false,
-  });
-  
-  res.json({ csrfToken: token });
+  res.json({ csrfToken: req.csrfToken() });
 };
 
 export const csrfErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  if (err !== invalidCsrfTokenError) {
+  if (err.code !== 'EBADCSRFTOKEN') {
     return next(err);
   }
-  
+
   res.status(403).json({ error: 'Некорректный CSRF токен'});
-};
+}
