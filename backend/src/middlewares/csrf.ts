@@ -9,6 +9,7 @@ const {
   getSecret: (req) => req?.cookies?.['_csrf'] || process.env.CSRF_SECRET || 'secret-key-for-csrf',
   getSessionIdentifier: (req) => 'session',
   cookieName: undefined,
+  cookieOptions: undefined,
   getCsrfTokenFromRequest: (req) => {
     return (req.headers['x-csrf-token'] || req.headers['csrf-token']) as string;
   },
@@ -20,7 +21,7 @@ export { doubleCsrfProtection as csrfProtection };
 export const sendCsrfToken = (req: Request, res: Response, next: NextFunction) => {
   
   const token = generateCsrfToken(req, res);
-  const secret = process.env.CSRF_SECRET
+  const secret = process.env.CSRF_SECRET || 'secret-key-for-csrf'
   res.cookie('_csrf', secret, {
     httpOnly: true,
     sameSite: 'strict',
