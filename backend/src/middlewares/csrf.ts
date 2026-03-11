@@ -24,7 +24,17 @@ const {
 export { doubleCsrfProtection as csrfProtection };
 
 export const sendCsrfToken = (req: Request, res: Response, next: NextFunction) => {
-  res.json({ csrfToken: generateCsrfToken(req, res) });
+  
+  const token = generateCsrfToken(req, res);
+  
+  res.cookie('_csrf', token, {
+    httpOnly: true,
+    sameSite: 'strict',
+    path: '/',
+    secure: false,
+  });
+  
+  res.json({ csrfToken: token });
 };
 
 export const csrfErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
