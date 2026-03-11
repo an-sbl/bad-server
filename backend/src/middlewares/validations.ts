@@ -32,11 +32,15 @@ export const validateOrderBody = celebrate({
                     'Указано не валидное значение для способа оплаты, возможные значения - "card", "online"',
                 'string.empty': 'Не указан способ оплаты',
             }),
-        email: Joi.string().email().required().messages({
+        email: Joi.string().max(30).email().required().messages({
             'string.empty': 'Не указан email',
+            'string.max': 'Почта слишком длиная (максимум 30 символов)',
         }),
-        phone: Joi.string().required().pattern(phoneRegExp).messages({
+        phone: Joi.string().required().min(6).max(20).pattern(phoneRegExp).messages({
             'string.empty': 'Не указан телефон',
+            'string.min': 'Телефон слишком короткий (минимум 6 символов)',
+            'string.max': 'Телефон слишком длинный (максимум 15 символов)',
+            'string.pattern.base': 'Неверный формат телефона',
         }),
         address: Joi.string().required().messages({
             'string.empty': 'Не указан адрес',
@@ -133,3 +137,44 @@ export const validateAuthentication = celebrate({
         }),
     }),
 })
+
+export const validateCustomersQuery = celebrate({
+    query: Joi.object({
+        page: Joi.number().integer().min(1).optional(),
+        limit: Joi.number().integer().min(1).optional(),
+        sortField: Joi.string().valid('createdAt', 'totalAmount', 'orderCount', 'lastOrderDate').optional(),
+        sortOrder: Joi.string().valid('asc', 'desc').optional(),
+        search: Joi.string().max(100).optional(),
+        registrationDateFrom: Joi.date().iso().optional(),
+        registrationDateTo: Joi.date().iso().optional(),
+        lastOrderDateFrom: Joi.date().iso().optional(),
+        lastOrderDateTo: Joi.date().iso().optional(),
+        totalAmountFrom: Joi.number().optional(),
+        totalAmountTo: Joi.number().optional(),
+        orderCountFrom: Joi.number().optional(),
+        orderCountTo: Joi.number().optional(),
+    }).unknown(false)
+});
+
+export const validateOrdersQuery = celebrate({
+    query: Joi.object({
+        page: Joi.number().integer().min(1).optional(),
+        limit: Joi.number().integer().min(1).optional(),
+        sortField: Joi.string().valid('createdAt', 'totalAmount', 'orderNumber', 'status').optional(),
+        sortOrder: Joi.string().valid('asc', 'desc').optional(),
+        search: Joi.string().max(100).optional(),
+        status: Joi.string().valid('new', 'delivering', 'completed', 'cancelled').optional(),
+        totalAmountFrom: Joi.number().optional(),
+        totalAmountTo: Joi.number().optional(),
+        orderDateFrom: Joi.date().iso().optional(),
+        orderDateTo: Joi.date().iso().optional(),
+    }).unknown(false)
+});
+
+export const validateUserOrdersQuery = celebrate({
+    query: Joi.object({
+        page: Joi.number().integer().min(1).optional(),
+        limit: Joi.number().integer().min(1).optional(),
+        search: Joi.string().max(100).optional(),
+    }).unknown(false)
+});

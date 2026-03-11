@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { format } from 'date-fns'
 import { useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import DOMPurify from 'dompurify';
 import { useDispatch, useSelector } from '../../services/hooks'
 import { selectOrderByNumber } from '../../services/selector'
 import { getCurrentUserOrderByNumber } from '../../services/slice/profile-orders/thunk'
@@ -73,7 +74,10 @@ export default function ProfileOrderDetail() {
                         {dataInfo.comment ? (
                             <div
                                 dangerouslySetInnerHTML={{
-                                    __html: dataInfo.comment,
+                                    __html: DOMPurify.sanitize(dataInfo.comment, {
+                                        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br'],
+                                        ALLOWED_ATTR: []
+                                    })
                                 }}
                             />
                         ) : (

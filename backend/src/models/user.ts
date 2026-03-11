@@ -17,6 +17,7 @@ export interface IUser extends Document {
     name: string
     email: string
     password: string
+    salt: string
     tokens: { token: string }[]
     roles: Role[]
     phone: string
@@ -67,7 +68,14 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
             minlength: [6, 'Минимальная длина поля "password" - 6'],
             select: false,
         },
-
+        salt: {
+            type: String,
+            required: true,
+            default() {
+                return Math.random().toString(36).substring(2, 15)
+            },
+            select: false,
+        },
         tokens: [
             {
                 token: { required: true, type: String },
@@ -117,7 +125,8 @@ const userSchema = new mongoose.Schema<IUser, IUserModel, IUserMethods>(
 userSchema.pre('save', async function hashingPassword(next) {
     try {
         if (this.isModified('password')) {
-            this.password = md5(this.password)
+            this.salt = Math.random().toString(36).substring(2, 15)
+            this.password = md5(this.password + this.salt)
         }
         next()
     } catch (error) {
@@ -176,9 +185,9 @@ userSchema.statics.findUserByCredentials = async function findByCredentials(
     password: string
 ) {
     const user = await this.findOne({ email })
-        .select('+password')
+        .select('+password +salt')
         .orFail(() => new UnauthorizedError('Неправильные почта или пароль'))
-    const passwdMatch = md5(password) === user.password
+    const passwdMatch = md5(password + user.salt) === user.password
     if (!passwdMatch) {
         return Promise.reject(
             new UnauthorizedError('Неправильные почта или пароль')
