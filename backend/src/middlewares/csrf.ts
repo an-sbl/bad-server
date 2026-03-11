@@ -7,8 +7,8 @@ const {
   invalidCsrfTokenError 
 } = doubleCsrf({
   getSecret: () => 'secret-key-for-csrf',
-  getSessionIdentifier: (req) => req.cookies?.['_csrf'] || '',
-  cookieName: "_csrf",
+  getSessionIdentifier: (req) => req.cookies?.['_csrf_secret'] || '',
+  cookieName: "_csrf_secret",
   cookieOptions: {
     httpOnly: true,
     sameSite: 'strict',
@@ -27,7 +27,7 @@ export const sendCsrfToken = (req: Request, res: Response, next: NextFunction) =
   
   const token = generateCsrfToken(req, res);
   
-  res.cookie('_csrf', token, {
+  res.cookie('_csrf', 'secret-placeholder', {
     httpOnly: true,
     sameSite: 'strict',
     path: '/',
